@@ -44,7 +44,7 @@ namespace App
 			if (title.length > TITLE_MAX_LENGTH) {
 				title = title.substr(0, TITLE_MAX_LENGTH) + "...";
 			}
-			hosts.push({icon:#host, title:title, name:filename, active:false, on: onMeta.name == filename, timer: null, dirty: false});
+			hosts.push({icon:#host, title:title, name:filename, active:false, on: onMeta && onMeta.name == filename, timer: null, dirty: false});
 			return true;
 		});
 	}
@@ -78,7 +78,7 @@ namespace App
 		if (host.name == "system") {
 			return;
 		}
-		
+
 		doSave(true);
 
 		// stdout.println("double click");

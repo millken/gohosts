@@ -21,7 +21,7 @@ var debug *bool = flag.Bool("vv", false, "enable debug")
 func main() {
 	flag.Parse()
 
-	rect := sciter.NewRect(300, 300, 1000, 700)
+	rect := sciter.NewRect(300, 300, 800, 500)
 	createFlags := sciter.SW_TITLEBAR | sciter.SW_RESIZEABLE | sciter.SW_CONTROLS | sciter.SW_MAIN
 	if *debug {
 		log.Println("[DEBUG MODE]")

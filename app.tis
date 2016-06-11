@@ -1,0 +1,294 @@
+self.ready = function() {
+	App.init();
+}
+
+
+namespace App
+{  
+	const TAG = "#@GOHOSTS ";
+	const SEPERATE = "# --------------------------------------------------";
+	const TITLE_MAX_LENGTH = 18;
+	var hosts = [{icon:#system,title:"System Hosts", name:"system", active:true, on: false, timer: null, dirty: false}]; // observable variable 
+	var activeHostIndex = 0;
+	var newHostTitle = "";
+
+	function init() {
+		view.isMaximizable = false;
+		view.mkdir(System.home("hosts"));
+
+		var onMeta = null;
+		try {
+		    var content = Bytes.load(getSystemHostPath()).toString("UTF-8");
+		    onMeta = getFileMeta(content);
+		    $(plaintext).value = removeFileMeta(content);
+		    $(plaintext).state.readonly = true;
+	    } catch(e) {
+	    	// host file need authorization for user: Authenticated User
+	    	view.msgbox(#warning, "Cannot read hosts file: " + System.path(#SYSTEM_BIN, "drivers/etc/hosts") );
+	    }
+
+	    getHostFiles(onMeta);
+	}
+
+	function getHostFiles(onMeta) {
+		System.scanFiles(getHostPath("*.*"), function(filename, attrs) {
+			if(attrs & (System.IS_DIR | System.IS_HIDDEN)) return true;
+
+			var title = filename;
+			var path = getHostPath(filename);
+			var content = Bytes.load(path).toString("UTF-8");
+			var meta = getFileMeta(content);
+			if (meta) {
+				title = meta.title;
+			}
+			if (title.length > TITLE_MAX_LENGTH) {
+				title = title.substr(0, TITLE_MAX_LENGTH) + "...";
+			}
+			hosts.push({icon:#host, title:title, name:filename, active:false, on: onMeta.name == filename, timer: null, dirty: false});
+			return true;
+		});
+	}
+
+
+	function showHost(index, host) {
+		if (index == activeHostIndex) {
+			return;
+		}
+
+		doSave(true);
+
+
+		var path = getHostPath(host.name);
+		if (host.name == "system") {
+			path = getSystemHostPath();
+			stdout.println($(plaintext).attributes)
+			$(plaintext).state.readonly = true;
+		} else {
+			$(plaintext).state.readonly = false;
+		}
+		var content = getFileContent(path);
+		$(plaintext).value = content;
+
+
+		toggleActiveHost(host.name);
+	}
+
+
+	function switchHost(host) {
+		if (host.name == "system") {
+			return;
+		}
+		
+		doSave(true);
+
+		// stdout.println("double click");
+		var path = getHostPath(host.name);
+		var content = getFileContent(path);
+
+		var meta = TAG + JSON.stringify({title: host.title, name: host.name});
+		content = meta + "\n\n" + SEPERATE + "\n" + content;
+
+		var success = Bytes.fromString(content, "UTF-8").save(getSystemHostPath());
+		if (success) {
+			toggleOnHost(host.name);
+			view.clearDNSCache();
+			Notification.show("Switch host success.", "Notification");  
+		} else {
+			view.msgbox(#warning, "Save host file failed!");
+		}
+	}
+
+	function addHost() {
+		$(#overlay).attributes.toggleClass("hide", false);
+		$(#edit-form).attributes.toggleClass("hide", false);
+	}
+
+	function cancelEdit() {
+		newHostTitle = "";
+		$(#msg).text = "";
+		$(#msg).attributes.toggleClass("hide", true);
+		$(#overlay).attributes.toggleClass("hide", true);
+		$(#edit-form).attributes.toggleClass("hide", true);
+	}
+
+	function doAddHost() {
+		var title = newHostTitle.trim();
+
+		if (title == "") {
+			$(#msg).text = "title cannot be empty.";
+			$(#msg).attributes.toggleClass("hide", false);
+			return;
+		}
+
+		for (var i = hosts.length - 1; i >= 0; i--) {
+			if (hosts[i].title == title) {
+				$(#msg).text = "title has exist.";
+				$(#msg).attributes.toggleClass("hide", false);
+				return;
+			}
+		}
+
+		var name = title.replace(/\s+/g, "_");
+		hosts.push({icon:#host, title:title, name:name, active:false, on: false, timer: null, dirty: false});
+		var path = getHostPath(hosts[hosts.length -1].name);
+		saveFileContent(path, "# " + title, hosts[hosts.length -1]);
+		showHost(hosts.length -1, hosts[hosts.length -1]);
+
+		cancelEdit();
+	}
+
+	function deleteHost() {
+		for (var i=hosts.length-1; i>=0; i--) {
+			if (i != 0 && hosts[i].active) {
+				view.deleteFile(getHostPath(hosts[i].name))
+				hosts.remove(i);
+				break;
+			}
+		}
+	}
+
+	function getFileContent(path) {
+		try {
+		    return removeFileMeta(Bytes.load(path).toString("UTF-8"));
+	    } catch(e) {
+	    	// host file need authorization for user: Authenticated User
+	    	view.msgbox(#warning, "Cannot read hosts file: " + path );
+	    }
+
+	    return "";
+	}
+
+	function saveFileContent(path, content, host) {
+		var meta = TAG + JSON.stringify({title: host.title, name: host.name});
+		content = meta + "\n\n" + SEPERATE + "\n" + content;
+
+		return Bytes.fromString(content, "UTF-8").save(path);
+	}
+
+	function getFileMeta(content) {
+		var lines = content.split("\n");
+		if (lines.length > 0) {
+			var firstLine = lines[0];
+			
+			if (firstLine.substr(0, TAG.length) == TAG) {
+				var meta = firstLine.substr(TAG.length).trim();
+				return parseData(meta);
+			}
+		}
+
+		return null;
+	}
+
+
+	function removeFileMeta(content) {
+		var lines = content.split("\n");
+		if (lines.length > 0) {
+			var firstLine = lines[0];
+			
+			if (firstLine.substr(0, TAG.length) == TAG) {
+				lines.shift();
+			}
+		}
+
+		if (lines.length > 0) {
+			var brankLine = lines[0];
+			if (brankLine.trim() == "") {
+				lines.shift();
+			}
+		}
+
+		if (lines.length > 0) {
+			var line = lines[0];
+			if (line.substr(0, SEPERATE.length) == SEPERATE) {
+				lines.shift();
+			}
+		}
+
+		return lines.join("\n");
+	}
+
+
+
+
+	function toggleActiveHost(name) {
+		for (var i=0; i<hosts.length; i++) {
+			if (hosts[i].name == name) {
+				hosts[i].active = true;
+				activeHostIndex = i;
+			} else {
+				hosts[i].active = false;
+			}
+		}
+	}
+
+	function toggleOnHost(name) {
+		for (var i=0; i<hosts.length; i++) {
+			if (hosts[i].name == name) {
+				hosts[i].on = true;
+			} else {
+				hosts[i].on = false;
+			}
+		}
+	}
+
+	function getSystemHostPath() {
+		return System.path(#SYSTEM_BIN, "drivers/etc/hosts");
+	}
+
+	function getHostPath(name) {
+		var dir = System.home("hosts")
+		return dir + "/" + name;
+	}
+
+	function changeHost() {
+		if (activeHostIndex != 0) {
+			hosts[activeHostIndex].dirty = true;
+			doSave(false);
+		}
+	}
+
+	function doSave(directUpdate) {
+		if (activeHostIndex == 0) {
+			return;
+		}
+
+		if (!hosts[activeHostIndex].dirty) {
+			return;
+		}
+
+
+		var idx = activeHostIndex;
+		if (hosts[idx].timer) {
+			clearTimeout(hosts[idx].timer);
+		}
+		var path = getHostPath(hosts[idx].name);
+		var content = $(plaintext).value;
+		var host = hosts[idx];
+
+		if (directUpdate) {
+			saveFileContent(path, content, host);
+			hosts[idx].timer = null;
+			hosts[idx].dirty = false;
+		} else {
+			// delay 1 seconds to save input
+			hosts[idx].timer = setTimeout(function() {
+				// stdout.println("timeout");
+				saveFileContent(path, content, host);
+				hosts[idx].timer = null;
+				hosts[idx].dirty = false;
+			}, 1000);
+		}
+	}
+
+	function setTimeout( func, milliseconds ) {
+	   function timerCallback(  ) { func(); return false; }
+	   self.timer(milliseconds, timerCallback, true);
+	   return timerCallback; // returns function reference as unique interval id.
+	}
+
+	function clearTimeout( id ) {
+	   self.timer(0, id, true);
+	}
+
+}  
+

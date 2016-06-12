@@ -21,7 +21,14 @@ var debug *bool = flag.Bool("vv", false, "enable debug")
 func main() {
 	flag.Parse()
 
-	rect := sciter.NewRect(300, 300, 800, 500)
+	screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
+	screenHeight := int(win.GetSystemMetrics(win.SM_CYSCREEN))
+	width := 900
+	height := 560
+	x := int(screenWidth/2 - width/2)
+	y := int(screenHeight/2 - height/2)
+	// left, Top, Right, Bottom
+	rect := sciter.NewRect(y, x, width, height)
 	createFlags := sciter.SW_TITLEBAR | sciter.SW_RESIZEABLE | sciter.SW_CONTROLS | sciter.SW_MAIN
 	if *debug {
 		log.Println("[DEBUG MODE]")

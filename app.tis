@@ -6,6 +6,7 @@ self.ready = function() {
 namespace App
 {  
 	const TAG = "#@GOHOSTS ";
+	const SWITCHHOST_TAG = "#@SwitchHosts! ";
 	const SEPERATE = "# --------------------------------------------------";
 	const TITLE_MAX_LENGTH = 18;
 	var hosts = [{icon:#system,title:"System Hosts", name:"system", active:true, on: false, timer: null, dirty: false}]; // observable variable 
@@ -174,6 +175,11 @@ namespace App
 				var meta = firstLine.substr(TAG.length).trim();
 				return parseData(meta);
 			}
+
+			if (firstLine.substr(0, SWITCHHOST_TAG.length) == SWITCHHOST_TAG) {
+				var meta = firstLine.substr(SWITCHHOST_TAG.length).trim();
+				return parseData(meta);
+			}
 		}
 
 		return null;
@@ -186,6 +192,8 @@ namespace App
 			var firstLine = lines[0];
 			
 			if (firstLine.substr(0, TAG.length) == TAG) {
+				lines.shift();
+			} else if (firstLine.substr(0, SWITCHHOST_TAG.length) == SWITCHHOST_TAG) {
 				lines.shift();
 			}
 		}

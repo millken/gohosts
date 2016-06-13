@@ -175,8 +175,8 @@
 <body model="App">
 
     <div id="menu">
-        <ul each="index, host in hosts">
-            <li click="showHost(index, host)" dblclick="switchHost(host)" class="{{active:host.active}}">
+        <ul each="host in hosts">
+            <li click="showHost(host)" dblclick="switchHost(host)" class="{{active:host.active}}">
             <span class="icon {{hide:host.icon != #system}}">&fa-desktop;</span>
             <span class="icon {{hide:host.icon != #host}}">&fa-file-text-o;</span>
             <output(host.title)/>

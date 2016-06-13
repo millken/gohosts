@@ -87,7 +87,7 @@ namespace App
 		var content = getFileContent(path);
 
 		var meta = TAG + JSON.stringify({title: host.title, name: host.name});
-		content = meta + "\n\n" + SEPERATE + "\n" + formatContentSpace(content);
+		content = meta + "\r\n\r\n" + SEPERATE + "\r\n" + formatContentSpace(content);
 
 		var success = Bytes.fromString(content, "UTF-8").save(getSystemHostPath());
 		if (success) {

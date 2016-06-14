@@ -169,6 +169,14 @@
         padding: 8dip 0 8dip 85dip;
     }
 
+    plaintext > text {
+        margin-left:3em;
+        hit-margin: 0 0 0 3em;
+        white-space: pre;
+        display: list-item;
+        list-style-type: index;  
+    }
+
     </style>
 </head>
 
@@ -196,7 +204,7 @@
     </div>
 
     <div id="editor">
-        <plaintext type="text/hosts" spaces-per-tab=2 change="changeHost()"></plaintext>
+        <plaintext type="text/hosts" spaces-per-tab=2 change="changeHost()" ></plaintext>
     </div>
 
     <popup#notification>

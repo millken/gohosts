@@ -30,6 +30,15 @@ namespace App
 	    }
 
 	    getHostFiles(onMeta);
+
+	    // double click to toggle comment
+	    $(plaintext).on("dblclick", function(ev)　{
+	    	if (ev.x <= 38) {
+	    		var line = ev.target;
+	    		toggleComment(line);
+	    	}
+	    	return false;
+		});
 	}
 
 	function getHostFiles(onMeta) {
@@ -317,6 +326,20 @@ namespace App
 	function clearTimeout( id ) {
 	   self.timer(0, id, true);
 	}
+
+	function toggleComment(line) {
+		if (!line.value) {
+			return;
+		}
+
+		if (line.value.match(/^\s*?#/)) {
+			line.value = line.value.replace(/^\s*?#/, "");
+		} else {
+			line.value = "#" + line.value;
+		}
+		$(plaintext).sendEvent("change");
+	}
+
 
 }  
 

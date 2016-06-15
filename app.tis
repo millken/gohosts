@@ -13,6 +13,7 @@ namespace App
 	var activeHostIndex = 0;
 	var activeHostName = "system";
 	var newHostTitle = "";
+	var searchItemsCount = -1;
 
 	function init() {
 		view.isMaximizable = false;
@@ -32,12 +33,62 @@ namespace App
 	    getHostFiles(onMeta);
 
 	    // double click to toggle comment
-	    $(plaintext).on("dblclick", function(ev)　{
-	    	if (ev.x <= 38) {
-	    		var line = ev.target;
+	    $(plaintext).on("dblclick", function(evt)　{
+	    	if (evt.x <= 38) {
+	    		var line = evt.target;
 	    		toggleComment(line);
 	    	}
-	    	return false;
+	    	return true;
+		});
+
+	    // ctrl+f to search text
+		$(plaintext).on("keypress", function(evt) {
+		    if( evt.ctrlKey && evt.keyCode == 6) { // ctrl+f
+		    	$(#searchbox).attributes.removeClass("hide");
+		    	$(#searchbox>input).state.focus = true;
+		    	$(#searchbox>input).execCommand("edit:selectall");
+		    	return true;
+		    } else if (evt.keyCode == Event.VK_ESCAPE) { // esc
+		    	hideSearchBox();
+		    	return true;
+		    }
+		});
+		$(#searchbox>input).on("keypress", function(evt) {
+		    if (evt.keyCode == Event.VK_ESCAPE) { // esc
+		    	hideSearchBox();
+		    	return true;
+		    } else if (evt.keyCode == 13) {  // enter
+		    	var findText = this.value.trim();
+
+		    	var allMatchBookMark = [];
+		    	for (var i = 0; i < $(plaintext).length; i++) {
+		    		var text = $(plaintext)[i];
+		    		var idx = text.value.indexOf(findText);
+		    		if (idx >= 0) {
+		    			var start = [bookmark: text.firstNode, idx, false];
+		    			var end = [bookmark: text.firstNode, idx+findText.length-1, true];
+		    			allMatchBookMark.push({index: i, start:start, end:end})
+		    		}
+		    	}
+
+		    	searchItemsCount = allMatchBookMark.length;
+
+		    	if (allMatchBookMark.length > 0) {
+		    		var startLine = $(plaintext).selection.start[0].parent.index;
+		    		if (startLine >= allMatchBookMark[allMatchBookMark.length -1].index) {
+		    			$(plaintext).selection.select(allMatchBookMark[0].end, allMatchBookMark[0].start);
+		    		} else {
+		    			for (var i = 0; i < allMatchBookMark.length; i++) {
+		    				if (allMatchBookMark[i].index > startLine) {
+		    					$(plaintext).selection.select(allMatchBookMark[i].end, allMatchBookMark[i].start);
+		    					break;
+		    				}
+		    			}
+		    		}
+		    	}
+		    	
+		    	return true;
+		    }
 		});
 	}
 
@@ -72,7 +123,6 @@ namespace App
 		var path = getHostPath(host.name);
 		if (host.name == "system") {
 			path = getSystemHostPath();
-			stdout.println($(plaintext).attributes)
 			$(plaintext).state.readonly = true;
 		} else {
 			$(plaintext).state.readonly = false;
@@ -338,6 +388,17 @@ namespace App
 			line.value = "#" + line.value;
 		}
 		$(plaintext).sendEvent("change");
+	}
+
+	function hideSearchBox() {
+		searchItemsCount = -1;
+
+		if (!$(#searchbox).attributes.hasClass("hide")) {
+	    	$(#searchbox).attributes.addClass("hide");
+	    }
+	    if (!$(plaintext).focus) {
+	    	$(plaintext).focus = true;
+	    }
 	}
 
 

@@ -1,0 +1,197 @@
+@font-face 
+  {
+    font-family: MyAwesome;
+    src: url(fontawesome/fontawesome-webfont.ttf);
+  }
+  body {
+    flow:horizontal; /* layout style: http://www.terrainformatica.com/htmlayout/flow.whtm */
+    padding: 0px;
+    margin:0px;
+    font: 14dip;
+  }
+
+  #menu {
+    width:25%%; 
+    min-width: 240dip;
+    height: *;
+    background-color: #373D47;
+    color:#979DA7;
+    padding: 5dip 0dip;
+    border-top: solid 1px #C5C3C5;
+    position: relative;
+  }
+  #menu ul{ 
+      overflow-y: auto;
+      padding: 0px;
+      margin-bottom:30dip;
+      height: *;
+    }
+
+    #menu li {
+      display:block; 
+      padding:0 20dip;
+      line-height:31dip;
+      text-decoration: none;
+      list-style: none;
+    }
+    #menu li:hover {
+        background-color: #2C3139;
+    }
+    #menu li.active {
+        background-color: #2C3139;
+        color:#fff;
+    }
+     #menu .icon {
+      margin-right:5dip;
+      display: inline-block;
+      font: 12dip MyAwesome;
+    }
+    #menu .toggle-icon {
+      float: right;
+      width: 16dip;
+      font: 14dip MyAwesome;
+    }
+    #menu .toggle-icon.on {
+      color: #ABFF99 ;
+    }
+
+
+    #toolbar-left {
+        position: absolute;
+        bottom: 0px;
+        left:0px;
+        width: 100dpi;
+        padding: 10dip 20dip;
+    }
+    #toolbar-right {
+        position: absolute;
+        bottom: 0px;
+        right:0px;
+        width: 100dpi;
+        padding: 10dip 20dip;
+    }
+    #toolbar-right span {
+        margin-left: 10dip;
+    }
+    #toolbar-left span,#toolbar-right span {
+        font-size: 20dip !important;
+    }
+    #toolbar-left span:hover,#toolbar-right span:hover {
+        color:#fff;
+    }
+
+  #editor {
+    width: 75%%;
+    border: solid 1px #C5C3C5;
+    height: *;
+  }
+  .hide {
+    display: none !important;
+  }
+
+  #overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #000;
+    opacity: 0.618;
+    z-index: 90;
+}
+
+#edit-form {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    background: #fff;
+    z-index: 100;
+    width: 420dip;
+    margin-left: -200dip;
+}
+
+#edit-form h2 {
+    background: #f5f5f5;
+    font-size: 14dip;
+    font-weight: normal;
+    padding: 0 10dip;
+    margin: 0;
+    line-height: 40dip;
+}
+
+#edit-form .form-group label {
+    display: inline-block;
+    width: 80dip;
+}
+
+#edit-form .form-group input {
+    width: 240dip;
+    padding: 6dip 10dip;
+    outline: none;
+}
+
+#edit-form .form-group {
+    padding: 20dip;
+    line-height: 34dip;
+}
+
+#edit-form .form-footer {
+        background: #f5f5f5;
+padding: 16px 20px;
+text-align: right;
+}
+
+#edit-form button{
+    border: none;
+    padding: 2dip 16dip;
+    margin-left: 1em;
+    cursor: pointer;
+    font-size: 14dip;
+    color: #000;
+}
+
+#edit-form  button.btn-default {
+    background: #09f;
+    color: #fff;
+}
+
+#msg {
+    color: red;
+    padding: 8dip 0 8dip 85dip;
+}
+
+plaintext > text {
+    margin-left:3em;
+    hit-margin: 0 0 0 3em;
+    white-space: pre;
+    display: list-item;
+    list-style-type: index;  
+}
+
+#searchbox {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    z-index: 99;
+}
+
+#searchbox input {
+    padding-right:64dip;
+    width: 100dip;
+}
+
+#searchbox button {
+    margin-left: -6px;
+}
+
+#searchtip {
+    position: absolute;
+    right: 30dip;
+    top: 2px;
+    color: #999;
+    z-index: 100;
+}
+
+#searchtip>span.noitems {
+    color: red;
+}

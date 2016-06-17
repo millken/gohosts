@@ -14,8 +14,8 @@
 <body model="App">
 
     <div id="menu">
-        <ul each="host in hosts">
-            <li click="showHost(host)" dblclick="switchHost(host)" class="{{active:host.active}}">
+        <ul each="index,host in hosts">
+            <li click="showHost(host)" dblclick="switchHost(host)" class="with-context-menu {{active:host.active}}" @data-name="host.name">
             <span class="icon {{hide:host.icon != #system}}">&fa-desktop;</span>
             <span class="icon {{hide:host.icon != #host}}">&fa-file-text-o;</span>
             <output(host.title)/>
@@ -25,10 +25,10 @@
         </ul>
 
         <div id="toolbar-left">
-            <span class="icon" click="addHost()">&fa-plus;</span>
+            <span class="icon" click="editHost()">&fa-plus;</span>
         </div>
         <div id="toolbar-right">
-            <span class="icon">&fa-search;</span><span class="icon" click="deleteHost()" >&fa-trash-o;</span>
+            <span class="icon" click="deleteHost()" >&fa-trash-o;</span>
         </div>
  
   
@@ -54,25 +54,34 @@
       <content></content>
     </popup>
 
+    <div class="hide">
+    <menu.context id="context">
+        <li id="context_edit_host">Change Host Title</li>
+        <li id="context_delete_host">Delete Host</li>
+    </menu>
+    </div>
+
     <div id="overlay" class="hide"></div>
     <div id="edit-form" class="hide">
-    <h2>Add New Host</h2>
+    <h2 class="{{hide:editHostIndex>0}}">Add New Host</h2>
+    <h2 class="{{hide:editHostIndex<=0}}">Edit Host</h2>
     <form class="form-horizontal">
         
         <div class="form-group">
             <label>Host Title: </label>
-            <input|text(newHostTitle) />
+            <input|text(editHostTitle) />
             <div id="msg" class="hide">title cannot be empty.</div>
         </div>
         <div class="form-footer">
             <button class="btn" click="cancelEdit()">Cancel</button>
-            <button class="btn btn-default" click="doAddHost()">Submit</button>
+            <button class="btn btn-default" click="doEditHost()">Save</button>
         </div>
     </form>
     </div>
 
 
-
+    <script type="text/tiscript" src="ddm.tis"></script>
+    <script type="text/tiscript" src="animations.tis"></script>
     <script type="text/tiscript" src="app.tis"></script>
 </body>
 

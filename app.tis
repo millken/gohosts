@@ -12,7 +12,8 @@ namespace App
 	var hosts = [{icon:#system,title:"System Hosts", name:"system", active:true, on: false, timer: null, dirty: false}]; // observable variable 
 	var activeHostIndex = 0;
 	var activeHostName = "system";
-	var newHostTitle = "";
+	var editHostTitle = "";
+	var editHostIndex = -1;
 	var searchItemsCount = -1;
 
 	function init() {
@@ -48,6 +49,9 @@ namespace App
 		    	$(#searchbox>input).state.focus = true;
 		    	$(#searchbox>input).execCommand("edit:selectall");
 		    	return true;
+		    } if( evt.ctrlKey && evt.keyCode == 3) { // ctrl+c
+		    	var text = view.clipboard(#get, #text);
+		    	view.clipboard(#put, formatContentSpace(text));
 		    } else if (evt.keyCode == Event.VK_ESCAPE) { // esc
 		    	hideSearchBox();
 		    	return true;
@@ -90,6 +94,53 @@ namespace App
 		    	return true;
 		    }
 		});
+
+
+		$(menu#context).on("click", "li#context_edit_host", function(evt) { 
+			var name = $(#menu li:hover).attributes["data-name"];
+			for (var i = 0; i < hosts.length; i++) {
+				if (i == 0) {
+					continue;
+				}
+
+				if (hosts[i].name == name) {
+					editHostTitle = hosts[i].title;
+					editHostIndex = i;
+
+					editHost();
+					break;
+				}
+			}
+
+			return true;
+		});
+		$(menu#context).on("click", "li#context_delete_host", function(evt) { 
+		    var name = $(#menu li:hover).attributes["data-name"];
+			for (var i = 0; i < hosts.length; i++) {
+				if (i == 0) {
+					continue;
+				}
+
+				if (hosts[i].name == name) {
+					hosts[i].active = true;
+					deleteHost();
+					break;
+				}
+			}
+
+			return true;
+		});
+
+
+		DragDrop
+	    {
+	      what      : "#menu ul > li > span:not(:first-child)",
+	      notBefore : "#menu ul > li:first-child",
+	      movable   : "#menu ul > li",
+	      where     : "#menu ul",
+	      container : "#menu ul",
+	      easeDrop  : Animation.Ease.OutQuad
+	    };
 	}
 
 	function getHostFiles(onMeta) {
@@ -169,21 +220,23 @@ namespace App
 		              .replace(/\[n\]/g, "\r\n");
 	}
 
-	function addHost() {
+	function editHost() {
+		// $(#edit-form input).state.focus = true;
 		$(#overlay).attributes.toggleClass("hide", false);
 		$(#edit-form).attributes.toggleClass("hide", false);
 	}
 
 	function cancelEdit() {
-		newHostTitle = "";
+		editHostTitle = "";
+		editHostIndex = -1;
 		$(#msg).text = "";
 		$(#msg).attributes.toggleClass("hide", true);
 		$(#overlay).attributes.toggleClass("hide", true);
 		$(#edit-form).attributes.toggleClass("hide", true);
 	}
 
-	function doAddHost() {
-		var title = newHostTitle.trim();
+	function doEditHost() {
+		var title = editHostTitle.trim();
 
 		if (title == "") {
 			$(#msg).text = "title cannot be empty.";
@@ -206,10 +259,20 @@ namespace App
 			return;
 		}
 
-		hosts.push({icon:#host, title:title, name:name, active:false, on: false, timer: null, dirty: false});
-		var path = getHostPath(hosts[hosts.length -1].name);
-		saveFileContent(path, "# " + title, hosts[hosts.length -1]);
-		showHost(hosts[hosts.length -1]);
+		if (editHostIndex > 0) {
+			var oldPath = getHostPath(hosts[editHostIndex].name);
+			var newPath = getHostPath(name);
+			view.renameFile(oldPath, newPath);
+
+			hosts[editHostIndex].title = title;
+			hosts[editHostIndex].name = name;
+			saveFileContent(newPath, getFileContent(newPath), hosts[editHostIndex]);
+		} else {
+			hosts.push({icon:#host, title:title, name:name, active:false, on: false, timer: null, dirty: false});
+			var path = getHostPath(hosts[hosts.length -1].name);
+			saveFileContent(path, "#" + title, hosts[hosts.length -1]);
+			showHost(hosts[hosts.length -1]);
+		}
 
 		cancelEdit();
 	}
@@ -239,7 +302,7 @@ namespace App
 
 	function saveFileContent(path, content, host) {
 		var meta = TAG + JSON.stringify({title: host.title, name: host.name});
-		content = meta + "\n\n" + SEPERATE + "\n" + content;
+		content = meta + "\r\n\r\n" + SEPERATE + "\r\n" + content;
 
 		return Bytes.fromString(content, "UTF-8").save(path);
 	}

@@ -49,6 +49,17 @@ func main() {
 			return sciter.NewValue(true)
 		}
 	})
+	w.DefineFunction("renameFile", func(args ...*sciter.Value) *sciter.Value {
+		oldPath := args[0].String()
+		newPath := args[1].String()
+		err := os.Rename(oldPath, newPath)
+		if err != nil {
+			log.Println(err)
+			return sciter.NewValue(false)
+		} else {
+			return sciter.NewValue(true)
+		}
+	})
 	w.DefineFunction("mkdir", func(args ...*sciter.Value) *sciter.Value {
 		path := args[0].String()
 		os.MkdirAll(path, os.ModePerm)

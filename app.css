@@ -195,3 +195,8 @@ plaintext > text {
 #searchtip>span.noitems {
     color: red;
 }
+
+.with-context-menu
+{
+  context-menu: selector(menu#context);
+}

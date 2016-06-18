@@ -1,5 +1,7 @@
 # gohosts
-Change windows hosts quickly as thunber!
+switch hosts quickly as lightning!
+
+![screenshot: `gohosts `](preview.png)
 
 
 # How to build in windows

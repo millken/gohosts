@@ -1,8 +1,3 @@
-@font-face 
-  {
-    font-family: MyAwesome;
-    src: url(fontawesome/fontawesome-webfont.ttf);
-  }
   body {
     flow:horizontal; /* layout style: http://www.terrainformatica.com/htmlayout/flow.whtm */
     padding: 0px;
@@ -258,4 +253,12 @@ plaintext > text {
 .with-context-menu
 {
   context-menu: selector(menu#context);
+}
+
+#edit-form h2::after {
+  content: "Add New Host";
+}
+
+#edit-form h2.edit::after {
+  content: "Edit Host";
 }

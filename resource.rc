@@ -1,0 +1,27 @@
+id ICON "app.ico"
+GLFW_ICON ICON "app.ico"
+
+1 VERSIONINFO
+FILEVERSION     0,1,0,0
+PRODUCTVERSION  0,1,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", "tri-lib.com"
+            VALUE "FileDescription", "GoHosts execute program"
+            VALUE "FileVersion", "0.1"
+            VALUE "InternalName", "gohosts"
+            VALUE "LegalCopyright", ""
+            VALUE "OriginalFilename", "gohosts.exe"
+            VALUE "ProductName", "GoHosts!"
+            VALUE "ProductVersion", "0.1"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

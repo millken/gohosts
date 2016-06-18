@@ -1,4 +1,3 @@
-//go:generate rsrc -arch=amd64 -ico=app.ico
 package main
 
 import (
@@ -6,7 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
+	_ "path/filepath"
 	"runtime"
 	"syscall"
 	"unsafe"
@@ -88,20 +87,22 @@ func main() {
 
 		return sciter.NewValue(false)
 	})
-	w.LoadFile("app.htm")
+	w.LoadFile("res/app.htm")
 	w.SetTitle("GoHosts v0.1")
 
 	if runtime.GOOS == "windows" {
 		// set icon
 		hwnd := win.HWND(unsafe.Pointer(w.GetHwnd()))
-		absFilePath, _ := filepath.Abs("app.ico")
-		hIcon := win.HICON(win.LoadImage(
-			0,
-			syscall.StringToUTF16Ptr(absFilePath),
-			win.IMAGE_ICON,
-			0,
-			0,
-			win.LR_DEFAULTSIZE|win.LR_LOADFROMFILE))
+		// absFilePath, _ := filepath.Abs("app.ico")
+		// hIcon := win.HICON(win.LoadImage(
+		// 	0,
+		// 	syscall.StringToUTF16Ptr(absFilePath),
+		// 	win.IMAGE_ICON,
+		// 	0,
+		// 	0,
+		// 	win.LR_DEFAULTSIZE|win.LR_LOADFROMFILE))
+		hIcon := NewIconFromResource("GLFW_ICON")
+		log.Println(hIcon)
 		if hIcon != 0 {
 			win.SendMessage(hwnd, win.WM_SETICON, 1, uintptr(unsafe.Pointer(hIcon)))
 			win.SendMessage(hwnd, win.WM_SETICON, 0, uintptr(unsafe.Pointer(hIcon)))
@@ -110,4 +111,34 @@ func main() {
 
 	w.Show()
 	w.Run()
+}
+
+// NewIconFromResource returns a new Icon, using the specified icon resource.
+func NewIconFromResource(resName string) (hIcon win.HICON) {
+	hInst := win.GetModuleHandle(nil)
+	if hInst == 0 {
+		hIcon = 0
+		log.Println(win.GetLastError())
+		return
+	}
+	if hIcon = win.LoadIcon(hInst, syscall.StringToUTF16Ptr(resName)); hIcon == 0 {
+		log.Println(win.GetLastError())
+	}
+
+	return
+}
+
+func NewIconFromResourceId(id uintptr) (hIcon win.HICON) {
+	hInst := win.GetModuleHandle(nil)
+	if hInst == 0 {
+		hIcon = 0
+		log.Println(win.GetLastError())
+		return
+	}
+
+	if hIcon = win.LoadIcon(hInst, win.MAKEINTRESOURCE(id)); hIcon == 0 {
+		log.Println(win.GetLastError())
+	}
+
+	return
 }

@@ -3,10 +3,10 @@
 <head>
     <title>GoHosts v0.1</title>
     <style>
-      @import url(plus.css);
-      @import url(colorizer.css);
-      @import url(notification.css);
-      @import url(app.css);
+      @import url(res/plus.css);
+      @import url(res/colorizer.css);
+      @import url(res/notification.css);
+      @import url(res/app.css);
     </style>
 </head>
 
@@ -60,8 +60,7 @@
 
     <div id="overlay" class="hide"></div>
     <div id="edit-form" class="hide">
-        <h2 class="{{hide:editHostIndex>0}}">Add New Host</h2>
-        <h2 class="{{hide:editHostIndex<=0}}">Edit Host</h2>
+        <h2></h2>
         <form class="form-horizontal">
             
             <div class="form-group">
@@ -77,9 +76,9 @@
     </div>
 
 
-    <script type="text/tiscript" src="ddm.tis"></script>
-    <script type="text/tiscript" src="animations.tis"></script>
-    <script type="text/tiscript" src="app.tis"></script>
+    <script type="text/tiscript" src="res/ddm.tis"></script>
+    <script type="text/tiscript" src="res/animations.tis"></script>
+    <script type="text/tiscript" src="res/app.tis"></script>
 </body>
 
 </html>

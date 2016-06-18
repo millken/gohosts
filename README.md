@@ -2,12 +2,10 @@
 Change windows hosts quickly as thunber!
 
 
-# How to build
+# How to build in windows
 
 ```
-// for windows
-go get -u github.com/akavel/rsrc
-go generate
+// Need installed MSYS2, open a MSYS2 shell and execute:
+windres -o rsrc.syso resource.rc
 go build -ldflags -H=windowsgui
-
 ```

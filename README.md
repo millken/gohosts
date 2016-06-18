@@ -6,8 +6,11 @@ switch hosts quickly as lightning!
 
 # How to build in windows
 
+1. download [sciter's SDK](http://sciter.com/download/)  
+
+2. install [MSYS2](https://msys2.github.io/), open a MSYS2 shell and execute:  
+
 ```
-// Need installed MSYS2, open a MSYS2 shell and execute:
 windres -o rsrc.syso resource.rc
 go build -ldflags -H=windowsgui
 ```

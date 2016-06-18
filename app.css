@@ -16,6 +16,7 @@
     height: *;
     background-color: #373D47;
     color:#979DA7;
+    fill:#979DA7;
     padding: 5dip 0dip;
     border-top: solid 1px #C5C3C5;
     position: relative;
@@ -33,6 +34,7 @@
       line-height:31dip;
       text-decoration: none;
       list-style: none;
+      overflow: hidden;
     }
     #menu li:hover {
         background-color: #2C3139;
@@ -44,16 +46,49 @@
      #menu .icon {
       margin-right:5dip;
       display: inline-block;
-      font: 12dip MyAwesome;
     }
     #menu .toggle-icon {
       float: right;
       width: 16dip;
+      display: inline-block;
+      margin-top: 4dip;
+    }
+    #menu ul span {
+      size:14dip;
+      padding:0;
+      stroke:none; 
+    }
+    #menu ul span.icon {
+      foreground: url(path:M1596 380q28 28 48 76t20 88v1152q0 40-28 68t-68 28h-1344q-40 0-68-28t-28-68v-1600q0-40 28-68t68-28h896q40 0 88 20t76 48zm-444-244v376h376q-10-29-22-41l-313-313q-12-12-41-22zm384 1528v-1024h-416q-40 0-68-28t-28-68v-416h-768v1536h1280zm-1024-864q0-14 9-23t23-9h704q14 0 23 9t9 23v64q0 14-9 23t-23 9h-704q-14 0-23-9t-9-23v-64zm736 224q14 0 23 9t9 23v64q0 14-9 23t-23 9h-704q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h704zm0 256q14 0 23 9t9 23v64q0 14-9 23t-23 9h-704q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h704z)  no-repeat 50% 50%; 
+      foreground-size:10dip;
+    }
+
+    #menu li:first-child span.icon {
+      foreground: url(path:M1728 992v-832q0-13-9.5-22.5t-22.5-9.5h-1600q-13 0-22.5 9.5t-9.5 22.5v832q0 13 9.5 22.5t22.5 9.5h1600q13 0 22.5-9.5t9.5-22.5zm128-832v1088q0 66-47 113t-113 47h-544q0 37 16 77.5t32 71 16 43.5q0 26-19 45t-45 19h-512q-26 0-45-19t-19-45q0-14 16-44t32-70 16-78h-544q-66 0-113-47t-47-113v-1088q0-66 47-113t113-47h1600q66 0 113 47t47 113z)  no-repeat 50% 50%; 
+      foreground-size:14dip;
+    }
+    #menu ul li.active span.icon {
+      color:#fff;
+      fill: #fff;
+    }
+    #menu li:not(:first-child) span.toggle-icon {
+      foreground: url(path:M1024 896q0-104-40.5-198.5t-109.5-163.5-163.5-109.5-198.5-40.5-198.5 40.5-163.5 109.5-109.5 163.5-40.5 198.5 40.5 198.5 109.5 163.5 163.5 109.5 198.5 40.5 198.5-40.5 163.5-109.5 109.5-163.5 40.5-198.5zm768 0q0-104-40.5-198.5t-109.5-163.5-163.5-109.5-198.5-40.5h-386q119 90 188.5 224t69.5 288-69.5 288-188.5 224h386q104 0 198.5-40.5t163.5-109.5 109.5-163.5 40.5-198.5zm128 0q0 130-51 248.5t-136.5 204-204 136.5-248.5 51h-768q-130 0-248.5-51t-204-136.5-136.5-204-51-248.5 51-248.5 136.5-204 204-136.5 248.5-51h768q130 0 248.5 51t204 136.5 136.5 204 51 248.5z)  no-repeat 50% 50%; 
+      foreground-size:16dip;
+    }
+
+    #menu ul span.toggle-icon.on {
+      /*foreground: url(path:M-128 896q0-130 51-248.5t136.5-204 204-136.5 248.5-51h768q130 0 248.5 51t204 136.5 136.5 204 51 248.5-51 248.5-136.5 204-204 136.5-248.5 51h-768q-130 0-248.5-51t-204-136.5-136.5-204-51-248.5zm1408 512q104 0 198.5-40.5t163.5-109.5 109.5-163.5 40.5-198.5-40.5-198.5-109.5-163.5-163.5-109.5-198.5-40.5-198.5 40.5-163.5 109.5-109.5 163.5-40.5 198.5 40.5 198.5 109.5 163.5 163.5 109.5 198.5 40.5z) no-repeat 50% 50%;  */
+      foreground: url(path:M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z)  no-repeat 50% 50%; 
+      foreground-size:16dip;
+      fill:#ABFF99;
+    }
+
+    
+
+    /*#menu ul span.icon.system::after {
       font: 14dip MyAwesome;
-    }
-    #menu .toggle-icon.on {
-      color: #ABFF99 ;
-    }
+      content:"&fa-desktop;";
+    }*/
 
 
     #toolbar-left {
@@ -78,6 +113,23 @@
     }
     #toolbar-left span:hover,#toolbar-right span:hover {
         color:#fff;
+        fill:#fff;
+    }
+
+    #toolbar-left span {
+      foreground: url(path:M1600 736v192q0 40-28 68t-68 28h-416v416q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-416h-416q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h416v-416q0-40 28-68t68-28h192q40 0 68 28t28 68v416h416q40 0 68 28t28 68z)  no-repeat 50% 50%; 
+      foreground-size:14dip;
+      size:16dip;
+      padding:0;
+      stroke:none; 
+    }
+
+    #toolbar-right span {
+      foreground: url(path:M704 736v576q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h64q14 0 23 9t9 23zm256 0v576q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h64q14 0 23 9t9 23zm256 0v576q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h64q14 0 23 9t9 23zm128 724v-948h-896v948q0 22 7 40.5t14.5 27 10.5 8.5h832q3 0 10.5-8.5t14.5-27 7-40.5zm-672-1076h448l-48-117q-7-9-17-11h-317q-10 2-17 11zm928 32v64q0 14-9 23t-23 9h-96v948q0 83-47 143.5t-113 60.5h-832q-66 0-113-58.5t-47-141.5v-952h-96q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h309l70-167q15-37 54-63t79-26h320q40 0 79 26t54 63l70 167h309q14 0 23 9t9 23z)  no-repeat 50% 50%; 
+      foreground-size:14dip;
+      size:16dip;
+      padding:0;
+      stroke:none; 
     }
 
   #editor {
@@ -142,7 +194,9 @@ text-align: right;
 }
 
 #edit-form button{
-    border: none;
+    color: #333;
+    background: #fff;
+    border: solid 1px #ccc;
     padding: 2dip 16dip;
     margin-left: 1em;
     cursor: pointer;
@@ -151,6 +205,12 @@ text-align: right;
 }
 
 #edit-form  button.btn-default {
+    color: #333;
+    background: #fff;
+    /*border: #ccc;*/
+}
+
+#edit-form  button.btn-submit {
     background: #09f;
     color: #fff;
 }

@@ -15,10 +15,14 @@ namespace App
 	var editHostTitle = "";
 	var editHostIndex = -1;
 	var searchItemsCount = -1;
+	var config = {};
+	var hosticon = "&fa-desktop;";
 
 	function init() {
 		view.isMaximizable = false;
 		view.mkdir(System.home("hosts"));
+
+		loadConfig();
 
 		var onMeta = null;
 		try {
@@ -134,16 +138,20 @@ namespace App
 
 		DragDrop
 	    {
-	      what      : "#menu ul > li > span:not(:first-child)",
+	      what      : "#menu ul > li > span",
 	      notBefore : "#menu ul > li:first-child",
 	      movable   : "#menu ul > li",
 	      where     : "#menu ul",
 	      container : "#menu ul",
+	      dropped: function(draggable, from) {
+	      	saveHostListSort();
+	      },
 	      easeDrop  : Animation.Ease.OutQuad
 	    };
 	}
 
 	function getHostFiles(onMeta) {
+		var tmpHosts = {}
 		System.scanFiles(getHostPath("*.*"), function(filename, attrs) {
 			if(attrs & (System.IS_DIR | System.IS_HIDDEN)) return true;
 
@@ -157,9 +165,24 @@ namespace App
 			if (title.length > TITLE_MAX_LENGTH) {
 				title = title.substr(0, TITLE_MAX_LENGTH) + "...";
 			}
-			hosts.push({icon:#host, title:title, name:filename, active:false, on: onMeta && onMeta.name == filename, timer: null, dirty: false});
+
+			tmpHosts[filename] = {icon:#host, title:title, name:filename, active:false, on: onMeta && onMeta.name == filename, timer: null, dirty: false};
 			return true;
 		});
+
+		if (config.sort) {
+			for (var i = 0; i < config.sort.length; i++) {
+				var name = config.sort[i];
+				if (tmpHosts[name]) {
+					hosts.push(tmpHosts[name]);
+					delete tmpHosts[name];
+				}
+			}
+		}
+
+		for (var name in tmpHosts) {
+			hosts.push(tmpHosts[name]);
+		}
 	}
 
 
@@ -260,18 +283,21 @@ namespace App
 		}
 
 		if (editHostIndex > 0) {
-			var oldPath = getHostPath(hosts[editHostIndex].name);
+			var oldname = hosts[editHostIndex].name;
+			var oldPath = getHostPath(oldname);
 			var newPath = getHostPath(name);
 			view.renameFile(oldPath, newPath);
 
 			hosts[editHostIndex].title = title;
 			hosts[editHostIndex].name = name;
 			saveFileContent(newPath, getFileContent(newPath), hosts[editHostIndex]);
+			saveHostListSort(null, oldname, name);
 		} else {
 			hosts.push({icon:#host, title:title, name:name, active:false, on: false, timer: null, dirty: false});
 			var path = getHostPath(hosts[hosts.length -1].name);
 			saveFileContent(path, "#" + title, hosts[hosts.length -1]);
 			showHost(hosts[hosts.length -1]);
+			saveHostListSort(null, null, name);
 		}
 
 		cancelEdit();
@@ -280,10 +306,12 @@ namespace App
 	function deleteHost() {
 		for (var i=hosts.length-1; i>=0; i--) {
 			if (i != 0 && hosts[i].active) {
-				view.deleteFile(getHostPath(hosts[i].name))
+				var deleteHostName = hosts[i].name;
+				view.deleteFile(getHostPath(deleteHostName))
 				hosts.remove(i);
 				activeHostIndex = 0;
 				activeHostName = "system";
+				saveHostListSort(deleteHostName);
 				break;
 			}
 		}
@@ -462,6 +490,48 @@ namespace App
 	    if (!$(plaintext).focus) {
 	    	$(plaintext).focus = true;
 	    }
+	}
+
+	function saveHostListSort(deleteHostName = null , oldHostName = null, newHostName = null) {
+		var sortContent = [];
+      	for(var li in $(#menu>ul)) {
+      		if (li.attributes["data-name"] && li.attributes["data-name"] != "system") {
+      			var hostname = li.attributes["data-name"];
+      			if (deleteHostName && deleteHostName == hostname) {
+      				continue;
+      			}
+      			if (oldHostName && newHostName && oldHostName == hostname) {
+      				hostname = newHostName;
+      			}
+	      		sortContent.push(hostname);
+	      	}
+      	}
+      	if (!oldHostName && newHostName) {
+      		sortContent.push(newHostName);
+      	}
+      	config.sort = sortContent;
+      	saveConfig();
+	}
+
+	function loadConfig() {
+		try {
+			var content = Bytes.load(System.home("config.json")).toString("UTF-8")
+			config = JSON.parse(content);
+		} catch(e) {
+			view.msgbox(#warning, e);
+		}
+	}
+
+	function saveConfig() {
+		if (!config) {
+			return;
+		}
+		try {
+			var content = JSON.stringify(config);
+			Bytes.fromString(content, "UTF-8").save(System.home("config.json"));
+		} catch(e) {
+			view.msgbox(#warning, e);
+		}
 	}
 
 

@@ -49,6 +49,14 @@ func main() {
 			return sciter.NewValue(true)
 		}
 	})
+	w.DefineFunction("fileExists", func(args ...*sciter.Value) *sciter.Value {
+		path := args[0].String()
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			return sciter.NewValue(false)
+		} else {
+			return sciter.NewValue(true)
+		}
+	})
 	w.DefineFunction("renameFile", func(args ...*sciter.Value) *sciter.Value {
 		oldPath := args[0].String()
 		newPath := args[1].String()

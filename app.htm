@@ -15,7 +15,7 @@
     <div id="menu">
         <ul each="index,host in hosts">
             <li click="showHost(host)" dblclick="switchHost(host)" class="with-context-menu {{active:host.active}}" @data-name="host.name">
-            <span class="icon"> </span>
+            <span class="icon" title="drag to change order"> </span>
             <output(host.title)/>
             <span class="toggle-icon {{on:host.icon == #host && host.on}}"> </span>
             </li>

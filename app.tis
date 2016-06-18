@@ -138,7 +138,7 @@ namespace App
 
 		DragDrop
 	    {
-	      what      : "#menu ul > li > span",
+	      what      : "#menu ul > li > span.icon",
 	      notBefore : "#menu ul > li:first-child",
 	      movable   : "#menu ul > li",
 	      where     : "#menu ul",
@@ -515,8 +515,11 @@ namespace App
 
 	function loadConfig() {
 		try {
-			var content = Bytes.load(System.home("config.json")).toString("UTF-8")
-			config = JSON.parse(content);
+			var path = System.home("config.json");
+			if (view.fileExists(path)) {
+				var content = Bytes.load(System.home("config.json")).toString("UTF-8")
+				config = JSON.parse(content);
+			}
 		} catch(e) {
 			view.msgbox(#warning, e);
 		}

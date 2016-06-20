@@ -189,7 +189,9 @@ namespace App
 		}
 
 		for (var name in tmpHosts) {
-			hosts.push(tmpHosts[name]);
+			if (name) {
+				hosts.push(tmpHosts[name]);
+			}
 		}
 	}
 

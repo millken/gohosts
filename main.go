@@ -8,14 +8,17 @@ import (
 	_ "path/filepath"
 	"runtime"
 	"syscall"
+	"time"
 	"unsafe"
 
-	"github.com/lxn/win"
+	"github.com/MakeNowJust/hotkey"
+	"github.com/cxfksword/win"
 	"github.com/oskca/sciter"
 	"github.com/oskca/sciter/window"
 )
 
 var debug *bool = flag.Bool("vv", false, "enable debug")
+var disableHotKey *bool = flag.Bool("disableHotKey", false, "diable hot key")
 
 func main() {
 	flag.Parse()
@@ -112,6 +115,7 @@ func main() {
 
 		return sciter.NewValue(text)
 	})
+
 	w.LoadFile("res/app.htm")
 	w.SetTitle("GoHosts v0.1")
 
@@ -133,6 +137,7 @@ func main() {
 		}
 	}
 
+	registerHotKey(w)
 	w.Show()
 	w.Run()
 }
@@ -142,11 +147,11 @@ func NewIconFromResource(resName string) (hIcon win.HICON) {
 	hInst := win.GetModuleHandle(nil)
 	if hInst == 0 {
 		hIcon = 0
-		log.Println(win.GetLastError())
+		log.Println("GetModuleHandle() error")
 		return
 	}
 	if hIcon = win.LoadIcon(hInst, syscall.StringToUTF16Ptr(resName)); hIcon == 0 {
-		log.Println(win.GetLastError())
+		log.Println("LoadIcon() error")
 	}
 
 	return
@@ -156,13 +161,42 @@ func NewIconFromResourceId(id uintptr) (hIcon win.HICON) {
 	hInst := win.GetModuleHandle(nil)
 	if hInst == 0 {
 		hIcon = 0
-		log.Println(win.GetLastError())
+		log.Println("GetModuleHandle() error")
 		return
 	}
 
 	if hIcon = win.LoadIcon(hInst, win.MAKEINTRESOURCE(id)); hIcon == 0 {
-		log.Println(win.GetLastError())
+		log.Println("LoadIcon() error")
 	}
 
 	return
+}
+
+// ctrl+ctrl to active windows
+func registerHotKey(w *window.Window) {
+	if *disableHotKey {
+		return
+	}
+
+	var prevHotKeyPressTime time.Time = time.Date(2000, time.January, 1, 1, 0, 0, 0, time.Local)
+
+	hkey := hotkey.New()
+	hkey.Register(hotkey.Ctrl, 0, func() {
+		if time.Now().Before(prevHotKeyPressTime.Add(400 * time.Millisecond)) {
+			hwnd := win.HWND(unsafe.Pointer(w.GetHwnd()))
+			curHwnd := win.GetForegroundWindow()
+			if curHwnd != hwnd {
+				win.ShowWindow(hwnd, win.SW_RESTORE)
+				win.SetForegroundWindow(hwnd)
+			} else {
+				win.ShowWindow(hwnd, win.SW_MINIMIZE|win.SW_HIDE)
+			}
+
+			prevHotKeyPressTime = time.Date(2000, time.January, 1, 1, 0, 0, 0, time.Local)
+			return
+		}
+
+		prevHotKeyPressTime = time.Now()
+		return
+	})
 }

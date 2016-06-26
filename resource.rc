@@ -10,7 +10,7 @@ BEGIN
         BLOCK "040904E4"
         BEGIN
             VALUE "CompanyName", "tri-lib.com"
-            VALUE "FileDescription", "GoHosts execute program"
+            VALUE "FileDescription", "A simple windows tool to switch hosts quickly!"
             VALUE "FileVersion", "0.1"
             VALUE "InternalName", "gohosts"
             VALUE "LegalCopyright", ""

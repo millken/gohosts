@@ -4,7 +4,7 @@ popup#notification { style-set: notification-message; }
 @set notification-message {
 
   :root {
-    prototype: Notification url(notification.tis);
+    prototype: Notification;
     margin:20dip;
     width: 300dip;
     display:none;

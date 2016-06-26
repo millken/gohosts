@@ -33,8 +33,8 @@ function colorize()
           } break;
         case #TAG-HEAD-END: {
             apply(bnTagStart,tz.tokenEnd,"tag"); 
-            if( tagScript ) { tz.push(#source,"</script>"); doScript(tz, tagScriptType, true, val); }
-            else if( tagStyle ) { tz.push(#source,"</style>"); doStyle(tz, true, val); }
+            if( tagScript ) { tz.push(#source,"</" + "script>"); doScript(tz, tagScriptType, true, val); }
+            else if( tagStyle ) { tz.push(#source,"</" + "style>"); doStyle(tz, true, val); }
           } break;
         case #TAG-END:      apply(tz.tokenStart,tz.tokenEnd,"tag"); break;  
         case #TAG-ATTR:     if( tagScript && tz.attr == "type") tagScriptType = tz.value; 
@@ -97,7 +97,7 @@ function colorize()
           }
           case #COMMENT:      apply(tz.tokenStart,tz.tokenEnd,"comment"); break;
           case #END-OF-ISLAND:  
-            // got </script>
+            // got script end tag
             tz.pop(); //pop tokenizer layer
             break loop;
         }
@@ -147,7 +147,7 @@ function colorize()
         }
         case #COMMENT:      apply(tz.tokenStart,tz.tokenEnd,"comment"); break;
         case #END-OF-ISLAND:  
-          // got </script>
+          // got  script end tag
           tz.pop(); //pop tokenizer layer
           break loop;
       }

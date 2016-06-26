@@ -1,5 +1,5 @@
 # gohosts
-switch hosts quickly as lightning!
+A simple windows tool to switch hosts quickly!
 
 ![screenshot: `gohosts `](preview.png)
 
@@ -12,5 +12,6 @@ switch hosts quickly as lightning!
 
 ```
 windres -o rsrc.syso resource.rc
+go run cmd/dist.go
 go build -ldflags -H=windowsgui
 ```

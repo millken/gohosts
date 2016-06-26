@@ -38,7 +38,7 @@ namespace App
 	    getHostFiles(onMeta);
 
 	    // double click to toggle comment
-	    $(plaintext).on("dblclick", function(evt)　{
+	    $(plaintext).on("dblclick", function(evt) {
 	    	if (evt.x <= 38) {
 	    		var line = evt.target;
 	    		toggleComment(line);
@@ -112,7 +112,7 @@ namespace App
 		    	hideSearchBox();
 		    	return true;
 		    } else if (evt.keyCode == 13) {  // enter
-		    	var findText = this.value.trim();
+		    	var findText = this.value;
 
 		    	var allMatchBookMark = [];
 		    	for (var i = 0; i < $(plaintext).length; i++) {

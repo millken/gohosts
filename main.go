@@ -5,19 +5,21 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	_ "path/filepath"
+	"path/filepath"
 	"runtime"
 	"syscall"
 	"time"
 	"unsafe"
 
 	"github.com/MakeNowJust/hotkey"
+	"github.com/cxfksword/gohosts/dist"
 	"github.com/cxfksword/win"
 	"github.com/oskca/sciter"
 	"github.com/oskca/sciter/window"
 )
 
 var debug *bool = flag.Bool("vv", false, "enable debug")
+var loadDist *bool = flag.Bool("dist", false, "load dist layout")
 var disableHotKey *bool = flag.Bool("disableHotKey", false, "diable hot key")
 
 func main() {
@@ -116,7 +118,14 @@ func main() {
 		return sciter.NewValue(text)
 	})
 
-	w.LoadFile("res/app.htm")
+	rootPath, _ := os.Getwd()
+	if _, err := os.Stat(filepath.Join(rootPath, "res/app.htm")); os.IsNotExist(err) || *loadDist {
+		log.Println("[LOAD DIST LAYOUT]")
+		w.LoadHtml(dist.DeployBinData, "")
+		// w.LoadFile("dist/app.htm")
+	} else {
+		w.LoadFile("res/app.htm")
+	}
 	w.SetTitle("GoHosts v0.1")
 
 	if runtime.GOOS == "windows" {

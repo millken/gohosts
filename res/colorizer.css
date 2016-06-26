@@ -1,7 +1,7 @@
 
 @set colorizer < std-plaintext 
 {
-  :root { aspect: colorize url(colorizer.tis); }
+  :root { aspect: colorize; }
   
   text { white-space:pre; }
   /*markup*/  
@@ -29,7 +29,7 @@ plaintext[type] {
 @set element-colorizer 
 {
   :root { 
-	  aspect: colorize url(colorizer.tis); 
+	  aspect: colorize; 
 	  background-color: #fafaff;
 		padding:4dip;
 		border:1dip dashed #bbb;

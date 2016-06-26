@@ -87,6 +87,31 @@ func main() {
 
 		return sciter.NewValue(false)
 	})
+	w.DefineFunction("clipboardText", func(args ...*sciter.Value) *sciter.Value {
+		var hwnd win.HWND
+		if !win.OpenClipboard(hwnd) {
+			log.Println("OpenClipboard error")
+			return sciter.NewValue("")
+		}
+		defer win.CloseClipboard()
+
+		hMem := win.HGLOBAL(win.GetClipboardData(win.CF_UNICODETEXT))
+		if hMem == 0 {
+			log.Println("GetClipboardData error")
+			return sciter.NewValue("")
+		}
+
+		p := win.GlobalLock(hMem)
+		if p == nil {
+			log.Println("GlobalLock() error")
+			return sciter.NewValue("")
+		}
+		defer win.GlobalUnlock(hMem)
+
+		text := win.UTF16PtrToString((*uint16)(p))
+
+		return sciter.NewValue(text)
+	})
 	w.LoadFile("res/app.htm")
 	w.SetTitle("GoHosts v0.1")
 
@@ -102,7 +127,6 @@ func main() {
 		// 	0,
 		// 	win.LR_DEFAULTSIZE|win.LR_LOADFROMFILE))
 		hIcon := NewIconFromResource("GLFW_ICON")
-		log.Println(hIcon)
 		if hIcon != 0 {
 			win.SendMessage(hwnd, win.WM_SETICON, 1, uintptr(unsafe.Pointer(hIcon)))
 			win.SendMessage(hwnd, win.WM_SETICON, 0, uintptr(unsafe.Pointer(hIcon)))

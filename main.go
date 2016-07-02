@@ -21,9 +21,19 @@ import (
 var debug *bool = flag.Bool("vv", false, "enable debug")
 var loadDist *bool = flag.Bool("dist", false, "load dist layout")
 var disableHotKey *bool = flag.Bool("disableHotKey", false, "diable hot key")
+var windowTitle string = "GoHosts v0.1"
 
 func main() {
 	flag.Parse()
+
+	// limit only one instance running
+	runingHwnd := win.FindWindow(nil, syscall.StringToUTF16Ptr(windowTitle))
+	if runingHwnd != 0 {
+		// has another gohosts process running
+		win.ShowWindow(runingHwnd, win.SW_RESTORE)
+		win.SetForegroundWindow(runingHwnd)
+		return
+	}
 
 	screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
 	screenHeight := int(win.GetSystemMetrics(win.SM_CYSCREEN))
@@ -126,7 +136,7 @@ func main() {
 	} else {
 		w.LoadFile("res/app.htm")
 	}
-	w.SetTitle("GoHosts v0.1")
+	w.SetTitle(windowTitle)
 
 	if runtime.GOOS == "windows" {
 		// set icon

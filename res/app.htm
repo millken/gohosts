@@ -5,6 +5,8 @@
     <script type="text/tiscript" src="res/plus.tis"></script>
     <script type="text/tiscript" src="res/colorizer.tis"></script>
     <script type="text/tiscript" src="res/notification.tis"></script>
+    <script type="text/tiscript" src="res/pinyin.tis"></script>
+    <script type="text/tiscript" src="res/fuzzy.tis"></script>
     <style>
       @import url(res/plus.css);
       @import url(res/colorizer.css);
@@ -25,10 +27,11 @@
         </ul>
 
         <div id="toolbar-left">
-            <span class="icon" click="editHost()"> </span>
+            <span class="icon add" click="editHost()"> </span>
         </div>
         <div id="toolbar-right">
-            <span class="icon" click="deleteHost()" > </span>
+            <span class="icon help" href="http://tri-lib.github.io/gohosts/"  click="openHelp()"> </span>
+            <span class="icon delete" click="deleteHost()" > </span>
         </div>
  
   
@@ -61,7 +64,7 @@
     </menu>
     </div>
 
-    <div id="overlay" class="hide"></div>
+    <div id="overlay"  class="hide"></div>
     <div id="edit-form" class="hide">
         <h2></h2>
         <form class="form-horizontal">
@@ -76,6 +79,17 @@
                 <button class="btn btn-submit" click="doEditHost()">Save</button>
             </div>
         </form>
+    </div>
+
+    <div id="quick-switch"  class="hide">
+        <div><input type="text" name=""></div>
+        <div>
+            <ul each="index,host in hosts|quickSwitchHostFilter">
+                <li click="showHost(host)" class="{{active:host.quickActive}}" >
+                    <output(host.title)/>
+                </li>
+            </ul>
+        </div>
     </div>
 
 

@@ -9,14 +9,14 @@ namespace App
 	const SWITCHHOST_TAG = "#@SwitchHosts! ";
 	const SEPERATE = "# --------------------------------------------------";
 	const TITLE_MAX_LENGTH = 18;
-	var hosts = [{icon:#system,title:"System Hosts", name:"system", active:true, on: false, timer: null, dirty: false}]; // observable variable 
+	var hosts = [{icon:#system,title:"System Hosts", name:"system", active:true, on: false, timer: null, dirty: false, filter: false, quickActive: true}]; // observable variable 
 	var activeHostIndex = 0;
 	var activeHostName = "system";
 	var editHostTitle = "";
 	var editHostIndex = -1;
 	var searchItemsCount = -1;
 	var config = {};
-	var hosticon = "&fa-desktop;";
+	var quickSwitchHostFilter = null;
 
 	function init() {
 		view.isMaximizable = false;
@@ -37,6 +37,104 @@ namespace App
 
 	    getHostFiles(onMeta);
 
+	    // edit host
+	    view.root.subscribe(function(evt) {
+			if( evt.ctrlKey && evt.keyCode == 80 && !evt.shiftKey && !evt.altKey) { // ctrl+p
+				showQuickSwitch();
+
+				return true;
+			} else if (evt.keyCode == Event.VK_ESCAPE) { // esc
+		    	hideQuickSwitch();
+
+		    	return true;
+		    } else if (evt.keyCode == Event.VK_UP) { // up
+		    	if (!$(#quick-switch).attributes.hasClass("hide")) {
+		    		var curActive = 0;
+		    		for (var i = 0; i < hosts.length; i++) {
+		    			if (hosts[i].quickActive) {
+		    				curActive = i;
+		    			}
+		    			hosts[i].quickActive = false;
+		    		}
+
+		    		if (curActive) {
+		    			hosts[curActive -1].quickActive = true;
+		    		} else {
+		    			hosts[hosts.length -1].quickActive = true;
+		    		}
+		    	}
+		    	//  else {
+		    	// 	var pre = $(#menu li.active).prior;
+		    	// 	$(#menu li.active).attributes.removeClass("active");
+		    	// 	if (pre) {
+			    // 		pre.attributes.addClass("active");
+			    // 	} else {
+			    // 		$(#menu li:last-child).attributes.addClass("active");
+			    // 	}
+		    	// }
+		    } else if (evt.keyCode == Event.VK_DOWN) { // down
+		    	if (!$(#quick-switch).attributes.hasClass("hide")) {
+		    		var curActive = 0;
+		    		for (var i = 0; i < hosts.length; i++) {
+		    			if (hosts[i].quickActive) {
+		    				curActive = i;
+		    			}
+		    			hosts[i].quickActive = false;
+		    		}
+
+		    		if (curActive != hosts.length - 1) {
+		    			hosts[curActive+1].quickActive = true;
+		    		} else {
+		    			hosts[0].quickActive = true;
+		    		}
+		    	}
+		    	//  else {
+		    	// 	var next = $(#menu li.active).next;
+		    	// 	$(#menu li.active).attributes.removeClass("active");
+		    	// 	if (next) {
+			    // 		next.attributes.addClass("active");
+			    // 	} else {
+			    // 		$(#menu li:first-child).attributes.addClass("active");
+			    // 	}
+		    	// }
+		    }
+		}, Event.KEY, Event.KEY_DOWN );
+
+		// quick switch host
+		$(#quick-switch input).on("keyup", function(evt) {
+			if (evt.keyCode == Event.VK_RETURN) {  // enter
+				$(#quick-switch li.active).sendEvent("click");
+				hideQuickSwitch();
+				return true;
+			}
+
+			quickSwitchHostFilter = null;
+			if (this.value.trim() == "") {
+				return true;
+			}
+			
+
+			var pinyin = new Pinyin();
+			var pinyinInput = pinyin.getFullChars(this.value.trim()).toLowerCase();
+
+			var pinyinHostTitles = [];
+			for (var i = 0; i < hosts.length; i++) {
+				hosts[i].filter = true;
+				hosts[i].quickActive = false;
+				pinyinHostTitles.push(pinyin.getFullChars(hosts[i].title).toLowerCase());
+			}
+
+			var results = fuzzy.filter(pinyinInput, pinyinHostTitles);
+			for (var i = 0; i < results.length; i++) {
+				if (i == 0) {
+					hosts[results[i].index].quickActive = true;
+				}
+				hosts[results[i].index].filter = false;
+			}
+
+			quickSwitchHostFilter = {filter:false};
+		});
+
 	    // double click to toggle comment
 	    $(plaintext).on("dblclick", function(evt) {
 	    	if (evt.x <= 38) {
@@ -48,16 +146,15 @@ namespace App
 
 		// edit host
 		$(#edit-form input).on("keypress", function(evt) {
-			if (evt.keyCode == 13) {  // enter
+			if (evt.keyCode == Event.VK_RETURN) {  // enter
 				doEditHost();
-				return false;
+				return true;
 			}
 		});
 
 	    // ctrl+f to search text
 		$(plaintext).on("keypress", function(evt) {
-			
-		    if( evt.ctrlKey && evt.keyCode == 6) { // ctrl+f
+		    if( evt.ctrlKey && evt.keyCode == 6 && !evt.shiftKey && !evt.altKey) { // ctrl+f
 		    	$(#searchbox).attributes.removeClass("hide");
 		    	$(#searchbox>input).state.focus = true;
 		    	$(#searchbox>input).execCommand("edit:selectall");
@@ -68,10 +165,21 @@ namespace App
 			    	view.clipboard(#put, formatContentSpace(text));
 			    }
 			    return true;
+		    } else if( evt.ctrlKey && evt.keyCode == 10 && !evt.shiftKey && !evt.altKey) { // ctrl+enter
+		    	for (var i = 0; i < hosts.length; i++) {
+		    		if (i > 0 && hosts[i].active) {
+		    			switchHost(hosts[i]);
+		    		}
+		    	}
+		    	
+		    	return true;
 		    } else if (evt.keyCode == Event.VK_ESCAPE) { // esc
 		    	hideSearchBox();
 		    	return true;
-		    }
+		    } 
+		    // else if (evt.keyCode == Event.VK_BACK) { // backspace
+		    // 	return true;
+		    // }
 		});
 		$(plaintext).on("exec:edit:paste", function() {
 			// bug hack!!!
@@ -111,7 +219,7 @@ namespace App
 		    if (evt.keyCode == Event.VK_ESCAPE) { // esc
 		    	hideSearchBox();
 		    	return true;
-		    } else if (evt.keyCode == 13) {  // enter
+		    } else if (evt.keyCode == Event.VK_RETURN) {  // enter
 		    	var findText = this.value;
 
 		    	var allMatchBookMark = [];
@@ -212,7 +320,7 @@ namespace App
 				title = title.substr(0, TITLE_MAX_LENGTH) + "...";
 			}
 
-			tmpHosts[filename] = {icon:#host, title:title, name:filename, active:false, on: onMeta && onMeta.name == filename, timer: null, dirty: false};
+			tmpHosts[filename] = {icon:#host, title:title, name:filename, active:false, on: onMeta && onMeta.name == filename, timer: null, dirty: false, filter: false, quickActive: false};
 			return true;
 		});
 
@@ -251,6 +359,7 @@ namespace App
 		}
 		var content = getFileContent(path);
 		$(plaintext).value = content;
+		focusPlainText();
 
 
 		toggleActiveHost(host.name);
@@ -351,7 +460,7 @@ namespace App
 			saveFileContent(newPath, getFileContent(newPath), hosts[editHostIndex]);
 			saveHostListSort(null, oldname, name);
 		} else {
-			hosts.push({icon:#host, title:title, name:name, active:false, on: false, timer: null, dirty: false});
+			hosts.push({icon:#host, title:title, name:name, active:false, on: false, timer: null, dirty: false, filter: false, quickActive: false});
 			var path = getHostPath(hosts[hosts.length -1].name);
 			saveFileContent(path, "#" + title, hosts[hosts.length -1]);
 			showHost(hosts[hosts.length -1]);
@@ -540,14 +649,18 @@ namespace App
 	}
 
 	function hideSearchBox() {
+		var success = false;
 		searchItemsCount = -1;
 
 		if (!$(#searchbox).attributes.hasClass("hide")) {
 	    	$(#searchbox).attributes.addClass("hide");
+	    	success = true;
 	    }
 	    if (!$(plaintext).focus) {
 	    	$(plaintext).focus = true;
 	    }
+
+	    return success;
 	}
 
 	function saveHostListSort(deleteHostName = null , oldHostName = null, newHostName = null) {
@@ -595,6 +708,32 @@ namespace App
 		}
 	}
 
+	function showQuickSwitch() {
+		$(#overlay).attributes.toggleClass("hide", false);
+		$(#quick-switch).attributes.toggleClass("hide", false);
 
+		$(#quick-switch input).state.focus = true;
+    	$(#quick-switch input).execCommand("edit:selectall");
+	}
+
+	function hideQuickSwitch() {
+		$(#overlay).attributes.toggleClass("hide", true);
+		$(#quick-switch).attributes.toggleClass("hide", true);
+	}
+
+	function focusPlainText() {
+		var text = $(plaintext)[0];
+		if (text) {
+			var start = [bookmark: text.firstNode, 0, false];
+			var end = [bookmark: text.firstNode, 0, false];
+			$(plaintext).selection.select(end, start);
+			$(plaintext).state.focus = true;
+		}
+	}
+
+	function openHelp() {
+		Sciter.launch( $(#toolbar-right span.help).attributes["href"] );
+  		return true; 
+	}
 }  
 

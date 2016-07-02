@@ -110,7 +110,7 @@
         fill:#fff;
     }
 
-    #toolbar-left span {
+    #toolbar-left span.add {
       foreground: url(path:M1600 736v192q0 40-28 68t-68 28h-416v416q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-416h-416q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h416v-416q0-40 28-68t68-28h192q40 0 68 28t28 68v416h416q40 0 68 28t28 68z)  no-repeat 50% 50%; 
       foreground-size:14dip;
       size:16dip;
@@ -118,9 +118,16 @@
       stroke:none; 
     }
 
-    #toolbar-right span {
+    #toolbar-right span.delete {
       foreground: url(path:M704 736v576q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h64q14 0 23 9t9 23zm256 0v576q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h64q14 0 23 9t9 23zm256 0v576q0 14-9 23t-23 9h-64q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h64q14 0 23 9t9 23zm128 724v-948h-896v948q0 22 7 40.5t14.5 27 10.5 8.5h832q3 0 10.5-8.5t14.5-27 7-40.5zm-672-1076h448l-48-117q-7-9-17-11h-317q-10 2-17 11zm928 32v64q0 14-9 23t-23 9h-96v948q0 83-47 143.5t-113 60.5h-832q-66 0-113-58.5t-47-141.5v-952h-96q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h309l70-167q15-37 54-63t79-26h320q40 0 79 26t54 63l70 167h309q14 0 23 9t9 23z)  no-repeat 50% 50%; 
       foreground-size:14dip;
+      size:16dip;
+      padding:0;
+      stroke:none; 
+    }
+    #toolbar-right span.help {
+      foreground: url(path:M1088 1256v240q0 16-12 28t-28 12h-240q-16 0-28-12t-12-28v-240q0-16 12-28t28-12h240q16 0 28 12t12 28zm316-600q0 54-15.5 101t-35 76.5-55 59.5-57.5 43.5-61 35.5q-41 23-68.5 65t-27.5 67q0 17-12 32.5t-28 15.5h-240q-15 0-25.5-18.5t-10.5-37.5v-45q0-83 65-156.5t143-108.5q59-27 84-56t25-76q0-42-46.5-74t-107.5-32q-65 0-108 29-35 25-107 115-13 16-31 16-12 0-25-8l-164-125q-13-10-15.5-25t5.5-28q160-266 464-266 80 0 161 31t146 83 106 127.5 41 158.5z)  no-repeat 50% 50%; 
+      foreground-size:11dip;
       size:16dip;
       padding:0;
       stroke:none; 
@@ -262,3 +269,39 @@ plaintext > text {
 #edit-form h2.edit::after {
   content: "Edit Host";
 }
+
+#quick-switch {
+  border: solid 2dip #B0B0B0;
+  padding: 5dip;
+  position: fixed;
+    top: 10%;
+    left: 50%;
+    background: #fff;
+    z-index: 110;
+    width: 320dip;
+    margin-left: -160dip;
+}
+
+#quick-switch input {
+  width: 315dip;
+  line-height: 2em;
+  height: 2em;
+  background-color: #EDEDED;
+}
+
+#quick-switch ul {
+  margin: 0;
+  padding: 0;
+}
+
+#quick-switch li {
+  list-style: none;
+  display: block;
+  padding: 3dip 10dip;
+  line-height: 2em;
+}
+
+#quick-switch li.active {
+    background-color: #EDEDED;
+}
+

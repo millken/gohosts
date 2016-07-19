@@ -1238,8 +1238,8 @@ popup#notification { style-set: notification-message; }
     }
 
     #menu ul span.toggle-icon.on {
-      /*foreground: url(path:M-128 896q0-130 51-248.5t136.5-204 204-136.5 248.5-51h768q130 0 248.5 51t204 136.5 136.5 204 51 248.5-51 248.5-136.5 204-204 136.5-248.5 51h-768q-130 0-248.5-51t-204-136.5-136.5-204-51-248.5zm1408 512q104 0 198.5-40.5t163.5-109.5 109.5-163.5 40.5-198.5-40.5-198.5-109.5-163.5-163.5-109.5-198.5-40.5-198.5 40.5-163.5 109.5-109.5 163.5-40.5 198.5 40.5 198.5 109.5 163.5 163.5 109.5 198.5 40.5z) no-repeat 50% 50%;  */
-      foreground: url(path:M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z)  no-repeat 50% 50%; 
+      foreground: url(path:M-128 896q0-130 51-248.5t136.5-204 204-136.5 248.5-51h768q130 0 248.5 51t204 136.5 136.5 204 51 248.5-51 248.5-136.5 204-204 136.5-248.5 51h-768q-130 0-248.5-51t-204-136.5-136.5-204-51-248.5zm1408 512q104 0 198.5-40.5t163.5-109.5 109.5-163.5 40.5-198.5-40.5-198.5-109.5-163.5-163.5-109.5-198.5-40.5-198.5 40.5-163.5 109.5-109.5 163.5-40.5 198.5 40.5 198.5 109.5 163.5 163.5 109.5 198.5 40.5z) no-repeat 50% 50%;  
+      /*foreground: url(path:M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z)  no-repeat 50% 50%; */
       foreground-size:16dip;
       fill:#ABFF99;
     }
@@ -2656,40 +2656,6 @@ namespace App
 		    // 	return true;
 		    // }
 		});
-		$(plaintext).on("exec:edit:paste", function() {
-			// bug hack!!!
-			// when clipboard text exceed 65535 chars, sciter clipboard will cut off more than 65535 chars
-			// here use golang win32 function to get all clipboard text and append
-			var text = view.clipboardText();
-	    	if (text && text.length > 65000) {
-	    		var startIndex = $(plaintext).selection.start[0].parent.index;
-	    		var endIndex = $(plaintext).selection.end[0].parent.index;
-	    		var selectionLen = $(plaintext).selection.text.length;
-	    		var selectionStartIndex = $(plaintext).selection.start[1];
-	    		var selectionEndIndex = $(plaintext).selection.end[1];
-	    		$(plaintext).selection.collapse(#toCaret);
-
-	    		var content = "";
-	    		for (var i = 0; i < $(plaintext).length; i++) {
-	    			if (i >= startIndex && i <= endIndex) {
-	    				if (startIndex == endIndex) {
-	    					content += $(plaintext)[i].text.splice(selectionStartIndex, selectionLen, text) + "\r\n";
-	    				} else {
-	    					if (i == startIndex) {
-	    						content += $(plaintext)[i].text.splice(selectionStartIndex, $(plaintext)[i].text.length, text);
-	    					} else if (i == endIndex) {
-	    						content += $(plaintext)[i].text.splice(0, selectionEndIndex + 1) + "\r\n";
-	    					}
-	    				}
-	    			} else {
-			    		content += $(plaintext)[i].text + "\r\n";
-			    	}
-		    	}
-		    	$(plaintext).value = content;
-		    	$(plaintext).sendEvent("change");
-		    	return true;
-		    }
-        });
 		$(#searchbox>input).on("keypress", function(evt) {
 		    if (evt.keyCode == Event.VK_ESCAPE) { // esc
 		    	hideSearchBox();

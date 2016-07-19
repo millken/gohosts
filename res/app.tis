@@ -181,40 +181,6 @@ namespace App
 		    // 	return true;
 		    // }
 		});
-		$(plaintext).on("exec:edit:paste", function() {
-			// bug hack!!!
-			// when clipboard text exceed 65535 chars, sciter clipboard will cut off more than 65535 chars
-			// here use golang win32 function to get all clipboard text and append
-			var text = view.clipboardText();
-	    	if (text && text.length > 65000) {
-	    		var startIndex = $(plaintext).selection.start[0].parent.index;
-	    		var endIndex = $(plaintext).selection.end[0].parent.index;
-	    		var selectionLen = $(plaintext).selection.text.length;
-	    		var selectionStartIndex = $(plaintext).selection.start[1];
-	    		var selectionEndIndex = $(plaintext).selection.end[1];
-	    		$(plaintext).selection.collapse(#toCaret);
-
-	    		var content = "";
-	    		for (var i = 0; i < $(plaintext).length; i++) {
-	    			if (i >= startIndex && i <= endIndex) {
-	    				if (startIndex == endIndex) {
-	    					content += $(plaintext)[i].text.splice(selectionStartIndex, selectionLen, text) + "\r\n";
-	    				} else {
-	    					if (i == startIndex) {
-	    						content += $(plaintext)[i].text.splice(selectionStartIndex, $(plaintext)[i].text.length, text);
-	    					} else if (i == endIndex) {
-	    						content += $(plaintext)[i].text.splice(0, selectionEndIndex + 1) + "\r\n";
-	    					}
-	    				}
-	    			} else {
-			    		content += $(plaintext)[i].text + "\r\n";
-			    	}
-		    	}
-		    	$(plaintext).value = content;
-		    	$(plaintext).sendEvent("change");
-		    	return true;
-		    }
-        });
 		$(#searchbox>input).on("keypress", function(evt) {
 		    if (evt.keyCode == Event.VK_ESCAPE) { // esc
 		    	hideSearchBox();
